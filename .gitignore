@@ -1,0 +1,29 @@
+# Python
+rbi/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# Environment / secrets
+.env
+*.env.local
+
+# Model weights and large artifacts — track via HF Hub, not git
+data/processed/chroma_db/
+finetune/checkpoints/
+finetune/adapter_weights/
+*.safetensors
+*.bin
+*.pt
+*.gguf
+
+# OS junk
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Raw scraped PDFs (large, reproducible via scraper — see README)
+data/raw/*.pdf
