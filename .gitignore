@@ -27,3 +27,10 @@ finetune/adapter_weights/
 
 # Raw scraped PDFs (large, reproducible via scraper — see README)
 data/raw/*.pdf
+
+
+clear
+cat >> .gitignore << 'EOF'
+
+# Cached raw HTML text (regenerable via scraper, keep repo lean)
+data/raw/html_text/
