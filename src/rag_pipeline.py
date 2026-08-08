@@ -26,6 +26,7 @@ import chromadb
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 from sentence_transformers import SentenceTransformer
+from language_utils import detect_language
 
 load_dotenv()
 
@@ -43,8 +44,8 @@ Rules:
 - Answer ONLY using the numbered source excerpts provided below. Do not use any outside knowledge.
 - If the provided sources do not contain enough information to answer, say so clearly instead of guessing.
 - When you use information from a source, reference it by its number, e.g. "[Source 2]".
-- Be precise and concise. This is used for regulatory compliance, so accuracy matters more than fluency."""
-
+- Be precise and concise. This is used for regulatory compliance, so accuracy matters more than fluency.
+- Respond in the same language the user asked the question in. If the question is in Hindi, answer in Hindi. If it's code-mixed Hindi-English, you may respond in a similarly natural code-mixed style."""
 
 def load_models():
     embed_model = SentenceTransformer(EMBED_MODEL_NAME)
@@ -100,6 +101,7 @@ def format_citations(retrieved):
 
 
 def answer_question(query, embed_model, collection, hf_client):
+    lang_info = detect_language(query)
     retrieved = retrieve(query, embed_model, collection)
     best_distance = retrieved["distances"][0]
 
@@ -125,7 +127,8 @@ def answer_question(query, embed_model, collection, hf_client):
         "citations": citations,
         "best_match_distance": best_distance,
         "low_confidence": low_confidence,
-    }
+        "detected_language": lang_info,
+      }
 
 
 def main():
@@ -143,10 +146,14 @@ def main():
         result = answer_question(query, embed_model, collection, hf_client)
 
         print()
+        print(f"[Detected language: {result['detected_language']['language']} "
+              f"(via {result['detected_language']['method']})]")
+
         if result["low_confidence"]:
             print(f"[Note: best retrieval match was weak (distance={result['best_match_distance']:.3f}). "
-                  f"This answer may not be well-grounded in the available circulars.]\n")
+                  f"This answer may not be well-grounded in the available circulars.]")
 
+        print()
         print("Answer:")
         print(result["answer"])
         print()
