@@ -1,0 +1,9 @@
+rbi/
+__pycache__/
+*.pyc
+.git/
+.env
+data/raw/*.pdf
+data/raw/html_text/
+data/processed/chroma_db/
+notebooks/
