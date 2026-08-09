@@ -20,9 +20,24 @@ RAG/LLM pipeline (see below for why).
 
 ## Architecture
 
+RBI website (150 circulars)
+│ scrape (sequential notification ID walk)
+▼
+Raw PDFs + metadata.csv (title, date, reference number, department)
+│ pypdf extraction + structural chunking
+▼
+chunks.jsonl (6,531 chunks, tagged with chapter/section/paragraph + metadata)
+│ embed (intfloat/multilingual-e5-small)
+▼
+Chroma vector store (persistent, local)
+│ retrieve top-k + confidence check
+▼
+Prompt (numbered context blocks) → LLM (Llama-3.3-70B via HF Inference)
+│
+▼
+Grounded answer + citations (mapped from retrieval metadata, not LLM recall)
+
 A separate, parallel path: `chunks.jsonl` → first-chunk-per-document →
-LoRA fine-tune (`distilbert-base-multilingual-cased`) → department
-classifier, trained on Colab's free T4 GPU, adapter pushed to HF Hub.
 
 ## Why RAG for Q&A, fine-tuning for classification
 
@@ -107,13 +122,17 @@ LID model instead.
 
 ## Project structure
 
-scripts/ RBI scraper, metadata repair script
-src/ PDF extraction/chunking, embeddings, RAG pipeline, language detection
-finetune/ Fine-tuning dataset prep, results
-notebooks/ Colab LoRA fine-tuning notebook
-app/ Gradio chat interface
-data/raw/ Scraped PDFs + metadata (PDFs gitignored, regenerable via scraper)
-data/processed/ Chunked text (committed) + Chroma vector store (gitignored, regenerable)
+## Project structure
+
+```
+scripts/            RBI scraper, metadata repair script
+src/                 PDF extraction/chunking, embeddings, RAG pipeline, language detection
+finetune/            Fine-tuning dataset prep, results
+notebooks/           Colab LoRA fine-tuning notebook
+app/                 Gradio chat interface
+data/raw/            Scraped PDFs + metadata (PDFs gitignored, regenerable via scraper)
+data/processed/      Chunked text (committed) + Chroma vector store (gitignored, regenerable)
+```
 
 ## Running locally
 
