@@ -20,24 +20,6 @@ RAG/LLM pipeline (see below for why).
 
 ## Architecture
 
-RBI website (150 circulars)
-│ scrape (sequential notification ID walk)
-▼
-Raw PDFs + metadata.csv (title, date, reference number, department)
-│ pypdf extraction + structural chunking
-▼
-chunks.jsonl (6,531 chunks, tagged with chapter/section/paragraph + metadata)
-│ embed (intfloat/multilingual-e5-small)
-▼
-Chroma vector store (persistent, local)
-│ retrieve top-k + confidence check
-▼
-Prompt (numbered context blocks) → LLM (Llama-3.3-70B via HF Inference)
-│
-▼
-Grounded answer + citations (mapped from retrieval metadata, not LLM recall)
-
-
 A separate, parallel path: `chunks.jsonl` → first-chunk-per-document →
 LoRA fine-tune (`distilbert-base-multilingual-cased`) → department
 classifier, trained on Colab's free T4 GPU, adapter pushed to HF Hub.
