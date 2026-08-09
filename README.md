@@ -20,6 +20,7 @@ RAG/LLM pipeline (see below for why).
 
 ## Architecture
 
+```
 RBI website (150 circulars)
 │ scrape (sequential notification ID walk)
 ▼
@@ -37,6 +38,7 @@ Prompt (numbered context blocks) → LLM (Llama-3.3-70B via HF Inference)
 ▼
 Grounded answer + citations (mapped from retrieval metadata, not LLM recall)
 
+```
 A separate, parallel path: `chunks.jsonl` → first-chunk-per-document →
 
 ## Why RAG for Q&A, fine-tuning for classification
